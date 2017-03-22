@@ -1,0 +1,17 @@
+.idea/*
+.idea/*
+*.iml
+*iml
+.gradle/*
+build/*
+classes/*
+logs/*
+*.log
+app.log
+/build/
+/.gradle/
+/bin/
+.classpath
+.project
+.settings/
+
