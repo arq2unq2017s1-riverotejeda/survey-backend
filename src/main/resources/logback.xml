@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <if condition='property("env").contains("prod")'>
+        <then>
+            <appender name="loggly" class="ch.qos.logback.ext.loggly.LogglyAppender">
+                <endpointUrl>http://logs-01.loggly.com/inputs/e35665be-747b-436d-8b90-bd1ab81042bf/tag/logback</endpointUrl>
+                <pattern>%d{"ISO8601", UTC}  %p %t %c{0}.%M - %m%n</pattern>
+            </appender>
+
+            <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <Pattern>
+                        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+                    </Pattern>
+                </layout>
+            </appender>
+
+            <root level="INFO">
+                <appender-ref ref="loggly" />
+                <appender-ref ref="console" />
+            </root>
+        </then>
+        <else>
+            <appender name="local" class="ch.qos.logback.core.ConsoleAppender">
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <Pattern>
+                        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+                    </Pattern>
+                </layout>
+            </appender>
+
+            <appender name="file-local"
+                      class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>../logs/app.log</file>
+                <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                    <Pattern>
+                        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+                    </Pattern>
+                </encoder>
+
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <!-- rollover daily -->
+                    <fileNamePattern>../logs/archived/app.%d{yyyy-MM-dd}.%i.log
+                    </fileNamePattern>
+                    <timeBasedFileNamingAndTriggeringPolicy
+                            class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                        <maxFileSize>10MB</maxFileSize>
+                    </timeBasedFileNamingAndTriggeringPolicy>
+                </rollingPolicy>
+
+            </appender>
+
+            <root level="INFO">
+                <appender-ref ref="file-local" />
+                <appender-ref ref="local" />
+            </root>
+        </else>
+    </if>
+</configuration>
