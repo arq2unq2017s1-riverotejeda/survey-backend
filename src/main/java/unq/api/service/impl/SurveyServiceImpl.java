@@ -292,11 +292,11 @@ public class SurveyServiceImpl implements SurveyService {
     private void validateSurvey(Survey survey) {
         LOGGER.info(String.format("Starting validation for user %s", survey.getStudentName()));
         Student studentByToken = repositoryService.getStudentByToken(survey.getToken());
-        if (null != studentByToken) {
+        if (null != studentByToken && studentByToken.getLegajo().equals(survey.getLegajo())) {
             LOGGER.info("Token student validation ok");
             return;
         }
-        throw new InvalidTokenException("Invalid token, user now exist for that token "+survey.getToken());
+        throw new InvalidTokenException("Invalid token for user "+survey.getStudentName());
     }
 
     @Override
