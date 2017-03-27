@@ -1,5 +1,6 @@
 package unq.api.service;
 
+import unq.api.model.Director;
 import unq.api.model.Student;
 import unq.api.model.Subject;
 import unq.api.model.Survey;
@@ -16,6 +17,7 @@ public interface RepositoryService {
     String saveSurvey(Survey survey);
     Survey getSurveyByStudent(String id, String year);
     String saveSubject(Subject subject);
+    String saveDirector (Director director);
     List<Subject> getSubjects(String year);
     List<Subject> getAllSubjects();
     List<Student> getStudents();

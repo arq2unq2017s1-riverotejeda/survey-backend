@@ -21,6 +21,8 @@ public interface SurveyService {
 
 	String saveSubject(Subject subject);
 
+	String saveDirector(Director director);
+
 	List<SubjectOptions> getAllSubjects(String year);
 
 	List<ClassStatistics> getClassOccupation(String year);

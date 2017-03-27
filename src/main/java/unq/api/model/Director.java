@@ -13,21 +13,19 @@ public class Director implements IdentifiableEntity, Serializable {
 
 
     private String id;
-    private String nombre;
-    private String apellido;
+    private String name;
+    private String lastName;
     private String email;
     private String token; //es la clave hasheada
 
 
-
-    public Director(String nombre, String apellido, String email, String token) {
-        this.nombre = nombre;
-        this.apellido = apellido;
+    public Director(String id, String name, String lastName, String email, String token) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
         this.email = email;
         this.token = token;
     }
-
-
 
     @Override
     public String getId() {
@@ -39,20 +37,21 @@ public class Director implements IdentifiableEntity, Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getApellido() {
-        return apellido;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {

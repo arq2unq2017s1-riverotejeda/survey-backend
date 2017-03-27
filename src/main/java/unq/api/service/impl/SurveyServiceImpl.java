@@ -78,6 +78,12 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
+    public String saveDirector(Director director) {
+        LOGGER.info(String.format("Starting saving director %s", director.getName()));
+        return repositoryService.saveDirector(director);
+    }
+
+    @Override
     public List<SubjectOptions> getAllSubjects(String year) {
         LOGGER.info(String.format("Start building subjects for year %s", year));
         List<SubjectOptions> options = new ArrayList<>();
