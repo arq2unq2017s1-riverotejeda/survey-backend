@@ -120,7 +120,7 @@ public class SurveyController {
 				Director director = GsonFactory.fromJson(request.body(), Director.class);
 				surveyService.saveDirector(director);
 			} catch (Exception e) {
-				LOGGER.error("Error while trying to save student", e);
+				LOGGER.error("Error while trying to save director", e);
 				return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 			}

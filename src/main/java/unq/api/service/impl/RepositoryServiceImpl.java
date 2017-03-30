@@ -20,8 +20,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class RepositoryServiceImpl implements RepositoryService {
 
-    private static MongoDBDAO mongoDAO = null;
-    private static MongoCache mongoCache = null;
+    private static MongoDBDAO mongoDAO = new MongoDBDAO();
+    private static MongoCache mongoCache = new MongoCache();
     private static Logger LOGGER = LoggerFactory.getLogger(RepositoryServiceImpl.class);
 
 

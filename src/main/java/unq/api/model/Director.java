@@ -24,7 +24,7 @@ public class Director implements IdentifiableEntity, Serializable {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
-        this.token = token;
+        this.setToken(token);
     }
 
     @Override

@@ -79,7 +79,7 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     public String saveDirector(Director director) {
-        LOGGER.info(String.format("Starting saving director %s", director.getName()));
+        LOGGER.info(String.format("Starting saving director %s", director.getLastName()));
         return repositoryService.saveDirector(director);
     }
 
