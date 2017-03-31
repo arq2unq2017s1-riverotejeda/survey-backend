@@ -1,10 +1,13 @@
 package unq.api.model;
 
 import com.despegar.integration.mongo.entities.IdentifiableEntity;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import unq.api.security.HMACEncrypter;
 import unq.utils.EnvConfiguration;
 
 import java.io.Serializable;
+
+import static unq.api.security.SecurityFilter.LOGGER;
 
 /**
  * Created by mtejeda on 27/03/17.
