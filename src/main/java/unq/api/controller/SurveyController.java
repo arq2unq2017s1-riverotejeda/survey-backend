@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import unq.api.exceptions.InvalidTokenException;
+import unq.api.model.Director;
 import unq.api.model.Student;
 import unq.api.model.Subject;
 import unq.api.model.Survey;
@@ -45,6 +46,8 @@ public class SurveyController {
 			}
 			return HttpServletResponse.SC_OK;
 		});
+
+
 
 		get("/subjects/:year", (request, response) -> {
 			response.type("application/json");
@@ -110,5 +113,19 @@ public class SurveyController {
 			response.type("application/json");
 			return GsonFactory.toJson(surveyService.getAllYears());
 		});
+
+		post("/director", (request, response) -> {
+			response.type("application/json");
+			try {
+				Director director = GsonFactory.fromJson(request.body(), Director.class);
+				surveyService.saveDirector(director);
+			} catch (Exception e) {
+				LOGGER.error("Error while trying to save director", e);
+				return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+
+			}
+			return HttpServletResponse.SC_OK;
+		});
+
 	}
 }

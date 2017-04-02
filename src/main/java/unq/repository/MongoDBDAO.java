@@ -10,6 +10,7 @@ import com.despegar.integration.mongo.connector.MongoCollection;
 import com.despegar.integration.mongo.connector.MongoCollectionFactory;
 import com.despegar.integration.mongo.query.Query;
 
+import unq.api.model.Director;
 import unq.api.model.Student;
 import unq.api.model.Subject;
 import unq.api.model.Survey;
@@ -207,6 +208,15 @@ public class MongoDBDAO {
 			query.equals("schoolYear", year);
 
 			return surveys.count(query);
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Error executing Mongo query", e);
+		}
+	}
+	public String saveDirector(Director director) {
+		try {
+			MongoCollection<Director> directors = mongoCollectionFactory.buildMongoCollection("director", Director.class);
+			return directors.save(director);
+
 		} catch (UnknownHostException e) {
 			throw new RuntimeException("Error executing Mongo query", e);
 		}

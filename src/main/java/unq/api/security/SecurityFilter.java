@@ -18,10 +18,10 @@ public class SecurityFilter implements SecurityHeaders{
     public static void initSecurityFilter(){
         LOGGER.info("Validating security headers");
 
-        Config secureKey = EnvConfiguration.configuration.getConfig("database");
+        Config secureKey = EnvConfiguration.configuration.getConfig("secureKey");
 
         before((request, response) -> {
-            String appSecureKey = secureKey.getString(request.headers(X_APP_NAME));
+                String appSecureKey = secureKey.getString(request.headers(X_APP_NAME));
             if(appSecureKey==null){
                 halt(401, "secure headers are missing");
             }else if(!appSecureKey.equals(request.headers(X_SECURE_KEY))){

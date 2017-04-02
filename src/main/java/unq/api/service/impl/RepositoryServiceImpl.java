@@ -3,6 +3,7 @@ package unq.api.service.impl;
 import com.google.common.cache.CacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unq.api.model.Director;
 import unq.api.model.Student;
 import unq.api.model.Subject;
 import unq.api.model.Survey;
@@ -19,8 +20,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class RepositoryServiceImpl implements RepositoryService {
 
-    private static MongoDBDAO mongoDAO = null;
-    private static MongoCache mongoCache = null;
+    private static MongoDBDAO mongoDAO = new MongoDBDAO();
+    private static MongoCache mongoCache = new MongoCache();
     private static Logger LOGGER = LoggerFactory.getLogger(RepositoryServiceImpl.class);
 
 
@@ -80,6 +81,12 @@ public class RepositoryServiceImpl implements RepositoryService {
     public String saveSubject(Subject subject) {
         LOGGER.info("Saving subject");
         return mongoDAO.saveSubject(subject);
+    }
+
+    @Override
+    public String saveDirector(Director director) {
+        LOGGER.info("Saving director");
+        return mongoDAO.saveDirector(director);
     }
 
     @Override
