@@ -18,7 +18,7 @@ public class ApiService {
 		LOGGER.info("Starting services configuration");
 		WebServiceConfiguration.getInstance().initConfiguration();
 		SecurityFilter.initSecurityFilter();
-		SurveyController.initSurveyEndopints();
+		SurveyController.initSurveyEndpoints();
 		LOGGER.info("Finish services configuration");
 	}
 

@@ -11,8 +11,8 @@ import unq.api.service.RepositoryService;
 import unq.repository.MongoDBDAO;
 import unq.utils.MongoCache;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -23,8 +23,15 @@ public class RepositoryServiceImpl implements RepositoryService {
     private static MongoDBDAO mongoDAO = new MongoDBDAO();
     private static MongoCache mongoCache = new MongoCache();
     private static Logger LOGGER = LoggerFactory.getLogger(RepositoryServiceImpl.class);
+    private static RepositoryService INSTANCE= null;
 
 
+    public static RepositoryService getInstance() {
+        if(INSTANCE == null) {
+            INSTANCE = new RepositoryServiceImpl();
+        }
+        return INSTANCE;
+    }
 
 
     @Override
@@ -45,31 +52,15 @@ public class RepositoryServiceImpl implements RepositoryService {
     public String saveStudent(Student student) {
         LOGGER.info(String.format("Saving student %s", student.getName()));
 
-        return this.mongoDAO.saveStudent(student);
+        return mongoDAO.saveStudent(student);
     }
 
     @Override
     public String saveSurvey(Survey survey) {
         LOGGER.info(String.format("Saving survey for student %s", survey.getStudentName()));
 
-        return this.mongoDAO.saveSurvey(survey);
+        return mongoDAO.saveSurvey(survey);
     }
-
-    /*
-    @Override
-    public Survey getSurveyByStudent(String id, String year) {
-        LOGGER.info(String.format("Getting survey by student %s and year %s", id, year));
-
-        try {
-            return mongoCache.getSurveyByStudent.get(year+id);
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get survey by student from cache");
-            throw new RuntimeException(e);
-        }catch(CacheLoader.InvalidCacheLoadException e){
-            LOGGER.info("Survey not found in database");
-            return null;
-        }
-    }*/
 
     @Override
     public Survey getSurveyByStudent(String id, String year) {
@@ -150,11 +141,26 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public Student getStudentByToken(String token) {
+    public Optional<Student> getStudentByToken(String token) {
         LOGGER.info(String.format("Getting student by token %s", token));
 
         try {
-            return mongoCache.getStudentByToken.get(token);
+            return Optional.ofNullable(mongoCache.getStudentByToken.get(token));
+        } catch (ExecutionException e) {
+            LOGGER.error("Error trying to get student from cache");
+            throw new RuntimeException(e);
+        } catch(CacheLoader.InvalidCacheLoadException e){
+            LOGGER.info("Student not found in database");
+            return null;
+        }
+    }
+
+    @Override
+    public Optional<Director> getDirectorByToken(String token) {
+        LOGGER.info(String.format("Getting student by token %s", token));
+
+        try {
+            return Optional.ofNullable(mongoCache.getDirectorByToken.get(token));
         } catch (ExecutionException e) {
             LOGGER.error("Error trying to get student from cache");
             throw new RuntimeException(e);

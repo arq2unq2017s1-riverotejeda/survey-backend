@@ -185,6 +185,19 @@ public class MongoDBDAO {
 		}
 	}
 
+	public Director getDirectorByToken(String token) {
+		try {
+			MongoCollection<Director> directors = mongoCollectionFactory.buildMongoCollection("director", Director.class);
+
+			Query query = new Query();
+			query.equals("token", token);
+			return directors.findOne(query);
+
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Error executing Mongo query", e);
+		}
+	}
+
 	public Integer cantStudents(){
 		try {
 			LOGGER.info("Counting students from database");
@@ -215,7 +228,8 @@ public class MongoDBDAO {
 	public String saveDirector(Director director) {
 		try {
 			MongoCollection<Director> directors = mongoCollectionFactory.buildMongoCollection("director", Director.class);
-			return directors.save(director);
+			directors.save(director);
+			return director.getToken();
 
 		} catch (UnknownHostException e) {
 			throw new RuntimeException("Error executing Mongo query", e);

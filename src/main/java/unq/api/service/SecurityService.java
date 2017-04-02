@@ -5,5 +5,6 @@ package unq.api.service;
  */
 public interface SecurityService {
 
-    String signUpApplication(String applicationName);
+    String getDirectorToken(String token);
+    String getStudentToken(String token);
 }
