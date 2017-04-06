@@ -14,4 +14,4 @@ app.log
 .classpath
 .project
 .settings/
-
+gradle/*

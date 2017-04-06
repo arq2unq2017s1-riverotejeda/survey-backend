@@ -10,6 +10,7 @@ import spark.utils.Assert;
 import unq.api.exceptions.InvalidTokenException;
 import unq.api.model.*;
 import unq.api.model.catalogs.SubjectOptions;
+import unq.api.security.HMACEncrypter;
 import unq.api.service.RepositoryService;
 import unq.api.service.SurveyService;
 import unq.utils.EnvConfiguration;
@@ -35,21 +36,22 @@ public class SurveyServiceImpl implements SurveyService {
     private static final String BAD_SCHEDULE = "bad_schedule";
     private static final String APPROVED = "approved";
 
-    private static RepositoryService repositoryService = new RepositoryServiceImpl();
+    private static RepositoryService repositoryService = RepositoryServiceImpl.getInstance();
     private static Logger LOGGER = LoggerFactory.getLogger(SurveyServiceImpl.class);
 
 
     @Override
     public String saveStudent(Student student) {
         LOGGER.info(String.format("Saving student %s", student.getLegajo()));
-        String token = SecurityTokenGenerator.getToken();
+        String token = HMACEncrypter.encrypt(student.getLegajo(), EnvConfiguration.configuration.getString("encryption-key"));
         student.setAuthToken(token);
         this.validateStudent(student);
-        String saved = repositoryService.saveStudent(student);
-        String url = getUrlNotification(token);
-        SendEmailTLS.sendEmailSurveyNotification(student.getName(), student.getEmail(),url);
+        repositoryService.saveStudent(student);
+        // Esto sigue teniendo sentido? Revisar
+        //String url = getUrlNotification(token);
+        //SendEmailTLS.sendEmailSurveyNotification(student.getName(), student.getEmail(),url);
         LOGGER.info("Finish saving student and sending survey notification");
-        return saved;
+        return token;
     }
 
     @Override
@@ -75,6 +77,13 @@ public class SurveyServiceImpl implements SurveyService {
     public String saveSubject(Subject subject) {
         LOGGER.info(String.format("Starting saving subject %s", subject.getName()));
         return repositoryService.saveSubject(subject);
+    }
+
+    @Override
+    public String saveDirector(Director director) {
+        LOGGER.info(String.format("Starting saving director %s", director.getLastName()));
+        director.setToken(director.getToken());
+        return repositoryService.saveDirector(director);
     }
 
     @Override
@@ -120,8 +129,7 @@ public class SurveyServiceImpl implements SurveyService {
     @Override
     public SurveyModel getSurveyModel(String token, String year) {
         LOGGER.info(String.format("Getting survey model for token %s and year %s", token, year));
-        Student studentByToken = repositoryService.getStudentByToken(token);
-        Assert.notNull(studentByToken, "Student must not be null for token");
+        Student studentByToken = repositoryService.getStudentByToken(token).orElseThrow(() -> new RuntimeException("Student must not be null for token"));
         Survey completedSurvey = repositoryService.getSurveyByStudent(studentByToken.getLegajo(), year);
         return new SurveyModel(studentByToken.getName(), studentByToken.getLegajo(), this.getAllSubjects(year),
                 completedSurvey);
@@ -291,12 +299,12 @@ public class SurveyServiceImpl implements SurveyService {
 
     private void validateSurvey(Survey survey) {
         LOGGER.info(String.format("Starting validation for user %s", survey.getStudentName()));
-        Student studentByToken = repositoryService.getStudentByToken(survey.getToken());
-        if (null != studentByToken) {
+        Student studentByToken = repositoryService.getStudentByToken(survey.getToken()).orElseThrow(() -> new RuntimeException("Invalid token, student now found"));
+        if (studentByToken.getLegajo().equals(survey.getLegajo())) {
             LOGGER.info("Token student validation ok");
             return;
         }
-        throw new InvalidTokenException("Invalid token, user now exist for that token "+survey.getToken());
+        throw new InvalidTokenException("Invalid token for user "+survey.getStudentName());
     }
 
     @Override

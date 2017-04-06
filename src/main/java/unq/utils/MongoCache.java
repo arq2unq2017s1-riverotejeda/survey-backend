@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unq.api.model.Director;
 import unq.api.model.Student;
 import unq.api.model.Subject;
 import unq.api.model.Survey;
@@ -109,6 +110,17 @@ public class MongoCache {
                         public Student load(String key) throws RuntimeException {
                             LOGGER.info("Missing key, getting student from MongoDB");
                             return mongoDAO.getStudentByToken(key);
+                        }
+                    });
+
+    public LoadingCache<String, Director> getDirectorByToken = CacheBuilder.newBuilder()
+            .maximumSize(1000)
+            .expireAfterAccess(5L, TimeUnit.MINUTES)
+            .build(
+                    new CacheLoader<String, Director>() {
+                        public Director load(String key) throws RuntimeException {
+                            LOGGER.info("Missing key, getting director from MongoDB");
+                            return mongoDAO.getDirectorByToken(key);
                         }
                     });
 

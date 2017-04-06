@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import unq.api.controller.SurveyController;
+import unq.api.security.SecurityFilter;
 import unq.utils.WebServiceConfiguration;
 
 /**
@@ -16,7 +17,8 @@ public class ApiService {
 	public static void main(String[] args) {
 		LOGGER.info("Starting services configuration");
 		WebServiceConfiguration.getInstance().initConfiguration();
-		SurveyController.initSurveyEndopints();
+		SecurityFilter.initSecurityFilter();
+		SurveyController.initSurveyEndpoints();
 		LOGGER.info("Finish services configuration");
 	}
 
