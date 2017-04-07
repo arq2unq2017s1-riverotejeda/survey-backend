@@ -190,6 +190,7 @@ public class MongoDBDAO {
 			MongoCollection<Director> directors = mongoCollectionFactory.buildMongoCollection("director", Director.class);
 
 			Query query = new Query();
+			//todo: agregar comparacion x hash no por clave plana
 			query.equals("token", token);
 			return directors.findOne(query);
 
