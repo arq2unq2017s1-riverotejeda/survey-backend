@@ -16,7 +16,7 @@ public class Director implements IdentifiableEntity, Serializable {
     private String name;
     private String lastName;
     private String email;
-    private String token; //es la clave hasheada
+    private String token;
 
 
     public Director(String id, String name, String lastName, String email, String token) {
@@ -24,7 +24,7 @@ public class Director implements IdentifiableEntity, Serializable {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
-        this.setToken(token);
+        this.token = token;
     }
     private Director(){
 
@@ -70,8 +70,7 @@ public class Director implements IdentifiableEntity, Serializable {
     }
 
     public void setToken(String token) {
-        String encryptedToken = HMACEncrypter.encrypt(token, EnvConfiguration.configuration.getString("encryption-key"));
-        this.token = encryptedToken;
+        this.token = token;
     }
 
 }
