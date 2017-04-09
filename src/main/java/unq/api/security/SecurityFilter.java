@@ -40,7 +40,7 @@ public class SecurityFilter implements SecurityHeaders{
             String encryptedToken = HMACEncrypter.encrypt(directorToken, EnvConfiguration.configuration.getString("encryption-key"));
             String validToken = securityService.getDirectorToken(encryptedToken); // get director token to cache/mongo
             if(!encryptedToken.equals(validToken)){
-                halt(401, "secure director token header is wrong");
+                halt(   401, "secure director token header is wrong");
             }
         });
 
