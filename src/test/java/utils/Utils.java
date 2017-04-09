@@ -27,7 +27,7 @@ public class Utils {
         String addr = EnvConfiguration.configuration.getString("appDomain");
         Config secureConfig = EnvConfiguration.configuration.getConfig("secureKey");
         String appName = secureConfig.getString("appName");
-        String key = secureConfig.getString("appKey");
+        String key = secureConfig.getString(appName);
 
         try {
             URL url = new URL(addr + path);
