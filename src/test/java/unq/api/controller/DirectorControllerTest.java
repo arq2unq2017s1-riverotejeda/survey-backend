@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import spark.Spark;
 import unq.api.service.ApiService;
 
+import java.util.HashMap;
 import java.util.Map;
 import utils.Utils.*;
 
@@ -30,7 +31,7 @@ public class DirectorControllerTest {
 
     @org.junit.Test
     public void initDirectorEndpoints() throws Exception {
-        TestResponse res = request("GET", "/public/subjects/201701");
+        TestResponse res = request("GET", "/public/subjects/201701", new HashMap<>());
         Map<String, String> json = res.json();
         assertEquals(200, res.status);
         //assertEquals("john", json.get("name"));

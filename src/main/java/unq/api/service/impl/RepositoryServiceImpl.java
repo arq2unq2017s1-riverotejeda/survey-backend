@@ -153,7 +153,7 @@ public class RepositoryServiceImpl implements RepositoryService {
             throw new RuntimeException(e);
         } catch(CacheLoader.InvalidCacheLoadException e){
             LOGGER.info("Student not found in database");
-            return null;
+            return Optional.empty();
         }
     }
 
