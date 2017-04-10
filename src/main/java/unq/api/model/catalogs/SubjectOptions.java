@@ -51,4 +51,14 @@ public class SubjectOptions implements Serializable {
 		this.generalOptions = generalOptions;
 	}
 
+	@Override
+	public String toString() {
+		return "SubjectOptions{" +
+				"subjectName='" + subjectName + '\'' +
+				", date=" + date +
+				", options=" + options +
+				", generalOptions=" + generalOptions +
+				", group='" + group + '\'' +
+				'}';
+	}
 }
