@@ -15,7 +15,6 @@ import unq.utils.GsonFactory;
 import utils.Utils;
 import utils.Utils.TestResponse;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,9 +53,10 @@ public class DirectorControllerTest {
         String subjectJson = GsonFactory.toJson(subject);
         Utils.TestResponse res1 = request("POST", "/director/subject", subjectJson, setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
         assertEquals(200, res1.status);
-        TestResponse res = request("GET", "/public/subjects/"+subject.getSchoolYear(),new HashMap<>());
+        Utils.TestResponse res = request("GET", "/public/subjects/"+subject.getSchoolYear(),new HashMap<>());
         Type listType = new TypeToken<List<SubjectOptions>>() {}.getType();
         List<SubjectOptions> subs = GsonFactory.fromJson(res.body, listType);
+        subjectsToDelete.add(subject);
         Assert.assertTrue(subjectExists(subject, subs));
     }
 
@@ -65,7 +65,7 @@ public class DirectorControllerTest {
         return names.contains(s.getName());
     }
 
-   //@Test
+   @Test
     public void saveSubjectWithoutToken(){
        Subject subject = createSubject("Arq", "201301");
         String subjectJson = GsonFactory.toJson(subject);
@@ -73,13 +73,12 @@ public class DirectorControllerTest {
         TestResponse res2 = request("GET", "/public/subjects/"+subject.getSchoolYear(),new HashMap<>());
         Type listType = new TypeToken<List<SubjectOptions>>() {}.getType();
         List<SubjectOptions> subs = GsonFactory.fromJson(res2.body, listType);
-        subjectsToDelete.add(subject);
         Assert.assertFalse(subjectExists(subject,subs));
         Assert.assertEquals(res.status, 401);
     }
 
     private Subject saveSubject(String name, String directorToken){
-        Subject subject = createSubject("TAdP", "201301");
+        Subject subject = createSubject(name, "201301");
         String subjectJson = GsonFactory.toJson(subject);
         Utils.TestResponse res = request("POST", "/director/subject", subjectJson, setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
         //student.setAuthToken(res.body);
