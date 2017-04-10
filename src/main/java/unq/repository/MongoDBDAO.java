@@ -248,6 +248,19 @@ public class MongoDBDAO {
 		}
 	}
 
+	public void deleteSubject(String name, String schoolYear){
+		try {
+			MongoCollection<Subject> subjects= mongoCollectionFactory.buildMongoCollection("subject", Subject.class);
+			Query query = new Query();
+			query.equals("name", name);
+			query.equals("schoolYear", schoolYear);
+			subjects.remove(query);
+
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Error executing Mongo query", e);
+		}
+	}
+
 	public void deleteStudent(String legajo){
 		try {
 			MongoCollection<Student> student = mongoCollectionFactory.buildMongoCollection("student", Student.class);
