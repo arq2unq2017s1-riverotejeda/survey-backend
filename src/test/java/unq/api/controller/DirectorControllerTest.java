@@ -52,7 +52,7 @@ public class DirectorControllerTest {
         Subject subject = createSubject("TAdP", "201301");
         String subjectJson = GsonFactory.toJson(subject);
         Utils.TestResponse res1 = request("POST", "/director/subject", subjectJson, setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
-        assertEquals(200, res1.status);
+        Assert.assertEquals(200, res1.status);
         Utils.TestResponse res = request("GET", "/public/subjects/"+subject.getSchoolYear(),new HashMap<>());
         Type listType = new TypeToken<List<SubjectOptions>>() {}.getType();
         List<SubjectOptions> subs = GsonFactory.fromJson(res.body, listType);
@@ -60,10 +60,7 @@ public class DirectorControllerTest {
         Assert.assertTrue(subjectExists(subject, subs));
     }
 
-    private boolean subjectExists(Subject s, List<SubjectOptions> subs) {
-        List<String> names = subs.stream().map(sub->sub.getSubjectName()).collect(Collectors.toList());
-        return names.contains(s.getName());
-    }
+
 
    @Test
     public void saveSubjectWithoutToken(){
@@ -81,7 +78,6 @@ public class DirectorControllerTest {
         Subject subject = createSubject(name, "201301");
         String subjectJson = GsonFactory.toJson(subject);
         Utils.TestResponse res = request("POST", "/director/subject", subjectJson, setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
-        //student.setAuthToken(res.body);
         subjectsToDelete.add(subject);
         return subject;
     }
@@ -104,7 +100,7 @@ public class DirectorControllerTest {
 
     private Subject createSubject(String name, String schoolYear){
         Subject subject = new Subject();
-        subject.setGroup("avanzadas");
+        subject.setGroup("Avanzadas");
         subject.setName(name);
         subject.setSchoolYear(schoolYear);
         Division d = new Division();
@@ -128,6 +124,9 @@ public class DirectorControllerTest {
         }
     }
 
-
+    private boolean subjectExists(Subject s, List<SubjectOptions> subs) {
+        List<String> names = subs.stream().map(sub->sub.getSubjectName()).collect(Collectors.toList());
+        return names.contains(s.getName());
+    }
 
 }
