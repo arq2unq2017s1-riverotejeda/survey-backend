@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import static unq.utils.EnvConfiguration.LOGGER;
+
 /**
  * Created by mrivero on 17/12/16.
  */
