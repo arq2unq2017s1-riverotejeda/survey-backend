@@ -50,7 +50,6 @@ public class DirectorControllerTest {
 
     @Test
     public void saveSubjectOKWithToken(){
-        LOGGER.info("EMPIEZA EL OTRO TEST");
         Subject subject = createSubject("TAdP", "201302");
         String subjectJson = GsonFactory.toJson(subject);
         Utils.TestResponse res1 = request("POST", "/director/subject", subjectJson, setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
@@ -92,8 +91,10 @@ public class DirectorControllerTest {
     }
 
 
+    //Estos tests solamente verifican que se puede accerder al endpoint sin seguridad y que la requeste devolverá estado 200 (OK)
+    //más allá de si hay info o no para mostrar
+
     @Test
-    //Este test solamente verifica que se puede accerder al endpoint sin seguridad y que la requeste devolverá estado 200 (OK)
     public void getAllSubjectsByYear(){
         TestResponse res = request("GET", "/public/subjects/201701",new HashMap<>());
         Assert.assertEquals(res.status, 200);
@@ -111,7 +112,28 @@ public class DirectorControllerTest {
         Assert.assertEquals(401, res.status);
     }
 
+    @Test
+    public void getsubjectsOccupationWithToken(){
+        Utils.TestResponse res = request("GET", "/director/subjectsOccupation/2017", setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
+        Assert.assertEquals(200, res.status);
+    }
+    @Test
+    public void getsubjectsOccupationWithOutToken(){
+        Utils.TestResponse res = request("GET", "/director/subjectsOccupation/2017", new HashMap<>());
+        Assert.assertEquals(401, res.status);
+    }
 
+
+    @Test
+    public void getSurveyByStudentByYearWithToken(){
+        Utils.TestResponse res = request("GET", "/director/survey/"+legajo+"/201701", setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
+        Assert.assertEquals(200, res.status);
+    }
+    @Test
+    public void getSurveyByStudentByYearWithOutToken(){
+        Utils.TestResponse res = request("GET", "/director/survey/"+legajo+"/201701", new HashMap<>());
+        Assert.assertEquals(401, res.status);
+    }
 
 
     private Subject saveSubject(String name, String schoolYear, String directorToken){
