@@ -14,10 +14,7 @@ import utils.Utils;
 import utils.Utils.TestResponse;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -28,6 +25,7 @@ public class DirectorControllerTest {
 
     private static String directorToken;
     private static ArrayList<Subject> subjectsToDelete = new ArrayList<>();
+    private static ArrayList<Student> studentsToDelete = new ArrayList<>();
     private static String studentName = "MArcia";
     private static String legajo = "22222";
 
@@ -39,12 +37,13 @@ public class DirectorControllerTest {
     public static void beforeClass() {
         ApiService.main(null);
         directorToken = singUpDummyDirector();
+        //student = saveStudent(legajo,directorToken);
     }
 
 
     @AfterClass
     public static void dropData(){
-        dropData(directorToken, subjectsToDelete, legajo);
+        dropData(directorToken, subjectsToDelete, studentsToDelete);
         Spark.stop();
     }
 
@@ -86,12 +85,13 @@ public class DirectorControllerTest {
         TestResponse res2 = request("GET", "/public/subjects/"+subject.getSchoolYear(),new HashMap<>());
         Type listType = new TypeToken<List<SubjectOptions>>() {}.getType();
         List<SubjectOptions> subs = GsonFactory.fromJson(res2.body, listType);
+        studentsToDelete.add(stu);
         Assert.assertFalse(subjectExists(subject,subs));
         Assert.assertEquals(res.status, 401);
     }
 
 
-    //Estos tests solamente verifican que se puede accerder al endpoint sin seguridad y que la requeste devolverá estado 200 (OK)
+    //Los siguientes tests solamente verifican que se puede accerder al endpoint sin seguridad y que la requeste devolverá estado 200 (OK)
     //más allá de si hay info o no para mostrar
 
     @Test
@@ -136,6 +136,74 @@ public class DirectorControllerTest {
     }
 
 
+    //TODO: ver cómo borrar la encuesta
+    @Test
+    public void saveAndGetSurveyByStudentByYear(){
+        Student s = saveStudent("121212", directorToken);
+        studentsToDelete.add(s);
+        String year = "201402";
+        //Guardo 5 materias para el semestre 201402
+        Subject s1 = saveSubject("s1", year, directorToken);
+        Subject s2 = saveSubject("s2", year, directorToken);
+        Subject s3 = saveSubject("s3", year, directorToken);
+        Subject s4 = saveSubject("s4", year, directorToken);
+        Subject s5 = saveSubject("s5", year, directorToken);
+
+        subjectsToDelete.add(s1);
+        subjectsToDelete.add(s2);
+        subjectsToDelete.add(s3);
+        subjectsToDelete.add(s4);
+        subjectsToDelete.add(s5);
+
+        TestResponse res1 = request("GET", "/public/subjects/"+year,new HashMap<>());
+        Type listType = new TypeToken<List<SubjectOptions>>() {}.getType();
+        List<SubjectOptions> options = GsonFactory.fromJson(res1.body, listType);
+        Survey survey = getSurvey("121212", year, studentName, s.getAuthToken(), options);
+
+        TestResponse res2 = request("POST", "/student/survey", GsonFactory.toJson(survey),
+                setUpSecurityHeaders(SecurityHeaders.X_STUDENT_TOKEN, s.getAuthToken()));
+
+        //guardo OK la encuesta
+        assertEquals(200, res2.status);
+
+
+        //traigo la encuesta para ese semestre
+        Utils.TestResponse res3 = request("GET", "/director/survey/"+s.getLegajo()+"/"+year,
+                setUpSecurityHeaders(SecurityHeaders.X_DIRECTOR_TOKEN, directorToken));
+
+        Survey surveyR = GsonFactory.fromJson(res3.body, Survey.class);
+        int cantSubjects = surveyR.getSelectedSubjects().size();
+        assertEquals(surveyR.getSchoolYear(), survey.getSchoolYear());
+        assertEquals(cantSubjects, 5);
+        assertEquals(surveyR.getLegajo(), s.getLegajo());
+        deleteSuvey(s.getName(), year);
+    }
+
+
+    private static void deleteSuvey(String name, String schoolYear){
+        MongoDBDAO mongoDAO = new MongoDBDAO();
+        mongoDAO.deleteSurvey(name, schoolYear);
+    }
+
+
+    private Survey getSurvey(String legajo, String schoolYear, String studentName, String token, List<SubjectOptions> options) {
+        Survey survey = new Survey();
+        survey.setLegajo(legajo);
+        survey.setSchoolYear(schoolYear);
+        survey.setStudentName(studentName);
+        survey.setToken(token);
+        List<SelectedSubject> selected = new ArrayList<>();
+        for(int i = 0; i<options.size(); i++){
+            SelectedSubject s = new SelectedSubject();
+            s.setStatus("APPROVED");
+            s.setSubject(options.get(i).getSubjectName());
+            selected.add(s);
+        }
+        survey.setSelectedSubjects(selected);
+        return survey;
+    }
+
+
     private Subject saveSubject(String name, String schoolYear, String directorToken){
         Subject subject = createSubject(name, schoolYear);
         String subjectJson = GsonFactory.toJson(subject);
@@ -177,14 +245,18 @@ public class DirectorControllerTest {
         return subject;
     }
 
-    private static void dropData(String directorToDelete, ArrayList<Subject> subjectsToDelete, String studentToDelete){
+    private static void dropData(String directorToDelete, ArrayList<Subject> subjectsToDelete, ArrayList<Student> studentsToDelete){
         MongoDBDAO mongoDAO = new MongoDBDAO();
 
         mongoDAO.deleteDirector(directorToDelete);
         for (int i = 0; i<subjectsToDelete.size(); i++){
             mongoDAO.deleteSubject(subjectsToDelete.get(i).getName(), subjectsToDelete.get(i).getSchoolYear());
         }
-        mongoDAO.deleteStudent(studentToDelete);
+        for (int i = 0; i<studentsToDelete.size(); i++){
+            mongoDAO.deleteStudent(studentsToDelete.get(i).getLegajo());
+        }
+
+
     }
 
     private boolean subjectExists(Subject s, List<SubjectOptions> subs) {
