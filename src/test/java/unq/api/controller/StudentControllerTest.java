@@ -3,6 +3,7 @@ package unq.api.controller;
 import org.junit.*;
 import spark.Spark;
 import unq.api.model.Director;
+import unq.api.model.SelectedSubject;
 import unq.api.model.Student;
 import unq.api.model.Survey;
 import unq.api.security.SecurityHeaders;
@@ -11,6 +12,7 @@ import unq.repository.MongoDBDAO;
 import unq.utils.GsonFactory;
 import utils.Utils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +38,8 @@ public class StudentControllerTest {
     public static void beforeClass() {
         ApiService.main(null);
         directorToken = singUpDummyDirector();
+        studentToSave = saveStudent(legajo, directorToken);
+
     }
 
     @AfterClass
@@ -46,8 +50,6 @@ public class StudentControllerTest {
 
     @Test
     public void getStudent_ok(){
-        studentToSave = saveStudent(legajo, directorToken);
-
         Utils.TestResponse res = request("GET", "/student/" + legajo, setUpSecurityHeaders(SecurityHeaders.X_STUDENT_TOKEN, studentToSave.getAuthToken()));
         Student savedStudent = GsonFactory.fromJson(res.body, Student.class);
         assertEquals(200, res.status);
@@ -76,23 +78,34 @@ public class StudentControllerTest {
 
     }
 
-    /*
+
     @Test
-    public void _getSurvey_ok(){
-        Student studentToSave = saveStudent(legajo, directorToken);
-        Survey defaultSurvey = getSurvey(studentToSave.getName(), studentToSave.getAuthToken());
-        Utils.TestResponse res = request("POST", "/student/survey", GsonFactory.toJson(defaultSurvey), setUpSecurityHeaders(SecurityHeaders.X_STUDENT_TOKEN, studentToSave.getAuthToken()));
-
-        assertEquals(200, res.status);
-
+    public void getSurvey_modify_ok(){
         Utils.TestResponse response = request("GET", "/student/survey/"+legajo+"/"+schoolYear, setUpSecurityHeaders(SecurityHeaders.X_STUDENT_TOKEN, studentToSave.getAuthToken()));
 
         assertEquals(200, response.status);
         Survey survey = GsonFactory.fromJson(response.body, Survey.class);
-        assertEquals(defaultSurvey.getSchoolYear(), survey.getSchoolYear());
-        assertEquals(defaultSurvey.getToken(), survey.getToken());
 
-    }*/
+        assertNotNull(survey);
+        assertEquals(survey.getSelectedSubjects().size(), 0);
+
+        SelectedSubject selectedSubject = new SelectedSubject();
+        selectedSubject.setStatus("OK");
+        selectedSubject.setSubject("MATH");
+        survey.setSelectedSubjects(Arrays.asList(selectedSubject));
+
+        response = request("POST", "/student/survey", GsonFactory.toJson(survey), setUpSecurityHeaders(SecurityHeaders.X_STUDENT_TOKEN, studentToSave.getAuthToken()));
+
+        assertEquals(200, response.status);
+
+        response = request("GET", "/student/survey/"+legajo+"/"+schoolYear, setUpSecurityHeaders(SecurityHeaders.X_STUDENT_TOKEN, studentToSave.getAuthToken()));
+
+        Survey newSurvey = GsonFactory.fromJson(response.body, Survey.class);
+
+        assertEquals(newSurvey.getSchoolYear(), survey.getSchoolYear());
+        assertEquals(newSurvey.getToken(), survey.getToken());
+        assertEquals(newSurvey.getSelectedSubjects().size(), 1);
+    }
 
     @Test
     public void saveSurvey_getSurvey_noValidToken_ok(){
@@ -118,7 +131,7 @@ public class StudentControllerTest {
         return survey;
     }
 
-    private Student saveStudent(String legajo, String directorToken){
+    private static Student saveStudent(String legajo, String directorToken){
         Student student = new Student();
         student.setEmail("marina@unq.com");
         student.setLegajo(legajo);
@@ -139,7 +152,7 @@ public class StudentControllerTest {
         return "unq2017";
     }
 
-    private Map<String, String> setUpSecurityHeaders(String headerName, String value){
+    private static Map<String, String> setUpSecurityHeaders(String headerName, String value){
         Map<String, String> items = new HashMap<>();
         items.put(headerName, value);
         return items;
