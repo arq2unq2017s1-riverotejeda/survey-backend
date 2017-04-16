@@ -7,8 +7,10 @@ import unq.api.model.Director;
 import unq.api.model.Student;
 import unq.api.model.Subject;
 import unq.api.model.Survey;
+import unq.api.security.HMACEncrypter;
 import unq.api.service.RepositoryService;
 import unq.repository.MongoDBDAO;
+import unq.utils.EnvConfiguration;
 import unq.utils.MongoCache;
 
 import java.util.List;
@@ -157,16 +159,19 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     @Override
     public Optional<Director> getDirectorByToken(String token) {
-        LOGGER.info(String.format("Getting student by token %s", token));
+        LOGGER.info(String.format("Getting director by token %s", token));
+
+        //String encryptedToken = HMACEncrypter.encrypt(token, EnvConfiguration.configuration.getString("encryption-key"));
+
 
         try {
             return Optional.ofNullable(mongoCache.getDirectorByToken.get(token));
         } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get student from cache");
+            LOGGER.error("Error trying to get director from cache");
             throw new RuntimeException(e);
         } catch(CacheLoader.InvalidCacheLoadException e){
-            LOGGER.info("Student not found in database");
-            return null;
+            LOGGER.info("Director not found in database");
+            return Optional.empty();
         }
     }
 

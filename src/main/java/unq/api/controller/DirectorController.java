@@ -70,7 +70,7 @@ public class DirectorController {
                 Subject subject = GsonFactory.fromJson(request.body(), Subject.class);
                 surveyService.saveSubject(subject);
             } catch (Exception e) {
-                LOGGER.error("Error while trying to save student", e);
+                LOGGER.error("Error while trying to save subject", e);
                 return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
             }

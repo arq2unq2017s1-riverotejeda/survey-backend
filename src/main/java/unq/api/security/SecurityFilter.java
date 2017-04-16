@@ -37,9 +37,10 @@ public class SecurityFilter implements SecurityHeaders{
             if(directorToken==null){
                 halt(401, "secure director token header is missing");
             }
-            String validToken = securityService.getDirectorToken(directorToken); // get director token to cache/mongo
-            if(!directorToken.equals(validToken)){
-                halt(401, "secure director token header is wrong");
+            String encryptedToken = HMACEncrypter.encrypt(directorToken, EnvConfiguration.configuration.getString("encryption-key"));
+            String validToken = securityService.getDirectorToken(encryptedToken); // get director token to cache/mongo
+            if(!encryptedToken.equals(validToken)){
+                halt(   401, "secure director token header is wrong");
             }
         });
 

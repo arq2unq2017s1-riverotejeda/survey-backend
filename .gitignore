@@ -16,4 +16,4 @@ app.log
 .settings/
 gradle/*
 gradlew
-gradlew.bat
+gradlew.bat 
