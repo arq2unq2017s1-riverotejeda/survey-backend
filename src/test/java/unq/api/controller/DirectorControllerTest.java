@@ -28,6 +28,7 @@ public class DirectorControllerTest {
     private static ArrayList<Student> studentsToDelete = new ArrayList<>();
     private static String studentName = "MArcia";
     private static String legajo = "22222";
+    private static String hashedDirectorToken;
 
     @Before
     public void setUp() throws Exception {
@@ -43,7 +44,7 @@ public class DirectorControllerTest {
 
     @AfterClass
     public static void dropData(){
-        dropData(directorToken, subjectsToDelete, studentsToDelete);
+        dropData(hashedDirectorToken, subjectsToDelete, studentsToDelete);
         Spark.stop();
     }
 
@@ -224,8 +225,8 @@ public class DirectorControllerTest {
         String directorJson = GsonFactory.toJson(director);
 
         Utils.TestResponse res = request("POST", "/private/director", directorJson, new HashMap<>());
-
-        return res.body;
+        hashedDirectorToken = res.body;
+        return "quilmes2017";
     }
 
     private Subject createSubject(String name, String schoolYear){

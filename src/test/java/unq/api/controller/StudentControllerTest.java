@@ -28,6 +28,7 @@ public class StudentControllerTest {
     private static String studentName = "Marina";
     private static String directorToken;
     private static Student studentToSave;
+    private static String hashedDirectorToken;
 
 
 
@@ -134,8 +135,8 @@ public class StudentControllerTest {
         String directorJson = GsonFactory.toJson(director);
 
         Utils.TestResponse res = request("POST", "/private/director", directorJson, new HashMap<>());
-
-        return res.body;
+        hashedDirectorToken = res.body;
+        return "unq2017";
     }
 
     private Map<String, String> setUpSecurityHeaders(String headerName, String value){

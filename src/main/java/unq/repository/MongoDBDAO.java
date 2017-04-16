@@ -275,7 +275,7 @@ public class MongoDBDAO {
 
 	public void deleteSurvey(String studentName, String schoolYear){
 		try {
-			MongoCollection<Survey> survey = mongoCollectionFactory.buildMongoCollection("Survey", Survey.class);
+			MongoCollection<Survey> survey = mongoCollectionFactory.buildMongoCollection("survey", Survey.class);
 			Query query = new Query();
 			query.equals("studentName", studentName);
 			query.equals("schoolYear", schoolYear);
