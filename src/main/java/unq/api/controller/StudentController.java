@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
+import static unq.utils.EnvConfiguration.LOGGER;
 
 /**
  * Created by mrivero on 2/4/17.

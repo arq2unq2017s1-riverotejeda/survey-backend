@@ -190,7 +190,6 @@ public class MongoDBDAO {
 			MongoCollection<Director> directors = mongoCollectionFactory.buildMongoCollection("director", Director.class);
 
 			Query query = new Query();
-			//todo: agregar comparacion x hash no por clave plana
 			query.equals("token", token);
 			return directors.findOne(query);
 
@@ -232,6 +231,56 @@ public class MongoDBDAO {
 			directors.save(director);
 			return director.getToken();
 
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Error executing Mongo query", e);
+		}
+	}
+
+	public void deleteDirector(String token){
+		try {
+			MongoCollection<Director> directors = mongoCollectionFactory.buildMongoCollection("director", Director.class);
+			Query query = new Query();
+			query.equals("token", token);
+			directors.remove(query);
+
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Error executing Mongo query", e);
+		}
+	}
+
+	public void deleteSubject(String name, String schoolYear){
+		try {
+			MongoCollection<Subject> subjects= mongoCollectionFactory.buildMongoCollection("subject", Subject.class);
+			Query query = new Query();
+			query.equals("name", name);
+			query.equals("schoolYear", schoolYear);
+			subjects.remove(query);
+
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Error executing Mongo query", e);
+		}
+	}
+
+	public void deleteStudent(String legajo){
+		try {
+			MongoCollection<Student> student = mongoCollectionFactory.buildMongoCollection("student", Student.class);
+			Query query = new Query();
+			query.equals("legajo", legajo);
+			student.remove(query);
+
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Error executing Mongo query", e);
+		}
+	}
+
+	public void deleteSurvey(String studentName, String schoolYear){
+		try {
+			MongoCollection<Survey> survey = mongoCollectionFactory.buildMongoCollection("Survey", Survey.class);
+			Query query = new Query();
+			query.equals("studentName", studentName);
+			query.equals("schoolYear", schoolYear);
+
+			survey.remove(query);
 		} catch (UnknownHostException e) {
 			throw new RuntimeException("Error executing Mongo query", e);
 		}

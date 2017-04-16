@@ -18,16 +18,14 @@ public class Director implements IdentifiableEntity, Serializable {
     private String email;
     private String token;
 
-
-    public Director(String id, String name, String lastName, String email, String token) {
-        this.id = id;
+    public Director(String name, String lastName, String email, String token) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.token = token;
     }
-    private Director(){
 
+    public Director() {
     }
 
     @Override
@@ -72,5 +70,6 @@ public class Director implements IdentifiableEntity, Serializable {
     public void setToken(String token) {
         this.token = token;
     }
+
 
 }

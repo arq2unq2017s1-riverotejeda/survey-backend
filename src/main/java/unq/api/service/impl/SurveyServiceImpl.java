@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
+import static unq.utils.EnvConfiguration.LOGGER;
 
 /**
  * Created by mrivero on 28/9/16.

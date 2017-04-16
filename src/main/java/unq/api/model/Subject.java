@@ -61,4 +61,15 @@ public class Subject implements IdentifiableEntity, Serializable {
 	public void setSchoolYear(String schoolYear) {
 		this.schoolYear = schoolYear;
 	}
+
+	@Override
+	public String toString() {
+		return "Subject{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", divisions=" + divisions +
+				", group='" + group + '\'' +
+				", schoolYear='" + schoolYear + '\'' +
+				'}';
+	}
 }

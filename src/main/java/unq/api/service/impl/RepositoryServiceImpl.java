@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import static unq.utils.EnvConfiguration.LOGGER;
+
 /**
  * Created by mrivero on 17/12/16.
  */
@@ -153,7 +155,7 @@ public class RepositoryServiceImpl implements RepositoryService {
             throw new RuntimeException(e);
         } catch(CacheLoader.InvalidCacheLoadException e){
             LOGGER.info("Student not found in database");
-            return null;
+            return Optional.empty();
         }
     }
 
