@@ -26,6 +26,7 @@ public class DirectorController {
 
 
     public static void initDirectorEndpoints() {
+        LOGGER.info("Director endpoints configured");
 
         /**
          * Sign up a student to the system

@@ -26,7 +26,7 @@ public class StudentController {
 
 
     public static void initStudentEndpoints(){
-
+        LOGGER.info("Student endpoints configured");
         /**
          * Get student information
          */
