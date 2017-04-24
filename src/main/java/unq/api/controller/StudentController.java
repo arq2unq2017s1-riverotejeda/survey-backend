@@ -1,5 +1,7 @@
 package unq.api.controller;
 
+import com.librato.metrics.client.GaugeMeasure;
+import com.librato.metrics.client.Measures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import unq.api.exceptions.InvalidTokenException;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static unq.utils.EnvConfiguration.LOGGER;
+import static unq.utils.Librato.client;
 
 /**
  * Created by mrivero on 2/4/17.
@@ -33,6 +36,7 @@ public class StudentController {
         get("/student/:legajo", (request, response) -> {
             response.type("application/json");
             Student student = surveyService.getStudentByID(request.params("legajo"));
+            client.postMeasures(new Measures().add(new GaugeMeasure("router.status.2xx", 1)));
             return GsonFactory.toJson(student);
         });
 
@@ -41,6 +45,7 @@ public class StudentController {
          */
         get("/public/subjects/:year", (request, response) -> {
             response.type("application/json");
+            client.postMeasures(new Measures().add(new GaugeMeasure("router.status.2xx", 1)));
             return GsonFactory.toJson(surveyService.getAllSubjects(request.params("year")));
         });
 
@@ -52,12 +57,15 @@ public class StudentController {
             try {
                 Survey survey = GsonFactory.fromJson(request.body(), Survey.class);
                 surveyService.saveSurvey(survey);
+                client.postMeasures(new Measures().add(new GaugeMeasure("router.status.2xx", 1)));
             } catch (InvalidTokenException i) {
                 LOGGER.error("Invalid token error trying to save a survey", i);
+                client.postMeasures(new Measures().add(new GaugeMeasure("router.status.4xx", 1)));
                 return HttpServletResponse.SC_NOT_ACCEPTABLE;
 
             } catch (Exception e) {
                 LOGGER.error("Error while trying to save a survey", e);
+                client.postMeasures(new Measures().add(new GaugeMeasure("router.status.5xx", 1)));
                 return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             }
             return HttpServletResponse.SC_OK;
@@ -68,6 +76,7 @@ public class StudentController {
          */
         get("/student/survey/:studentID/:year", (request, response) -> {
             response.type("application/json");
+            client.postMeasures(new Measures().add(new GaugeMeasure("router.status.2xx", 1)));
             return GsonFactory.toJson(surveyService.getSurveyByStudent(request.params("studentID") ,request.params("year")));
         });
 
