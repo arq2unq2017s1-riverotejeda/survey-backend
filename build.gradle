@@ -1,5 +1,4 @@
 group 'unq.university.survey'
-version '0.0.2-SNAPSHOT'
 
 
 buildscript {
@@ -59,11 +58,12 @@ dependencies {
 
 }
 
+
 //create a single Jar with all dependencies
 task deploy(type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'Survey',
-                'Implementation-Version': version,
+                'Implementation-Version': '0.0.2-SNAPSHOT', // change it when a new release is ready
                 'Main-Class': 'unq.api.service.ApiService'
     }
     baseName = project.name + '-all'

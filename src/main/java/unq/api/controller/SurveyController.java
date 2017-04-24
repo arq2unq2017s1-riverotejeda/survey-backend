@@ -26,6 +26,7 @@ public class SurveyController {
 
 	public static void initSurveyEndpoints() {
         LOGGER.info("Starting app endpoints");
+        AppController.initEndpoints();
         StudentController.initStudentEndpoints();
         DirectorController.initDirectorEndpoints();
 	}
