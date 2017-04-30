@@ -6,18 +6,28 @@ buildscript {
         mavenCentral()
         mavenLocal()
     }
+    dependencies {
+       classpath 'se.transmode.gradle:gradle-docker:1.1'
+   }
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
+apply plugin: 'docker'
 
 repositories {
     mavenCentral()
     mavenLocal()
 }
 
+// sourceCompatibility = 1.8
 mainClassName = 'unq.api.service.ApiService'
+
+
+distDocker {
+    exposePort 9090
+}
 
 dependencies {
 
@@ -54,9 +64,8 @@ dependencies {
     compile group: 'org.powermock', name: 'powermock-api-mockito', version: '1.6.6'
 
 
-
-
 }
+
 
 
 //create a single Jar with all dependencies
