@@ -6,15 +6,15 @@ buildscript {
         mavenCentral()
         mavenLocal()
     }
-    dependencies {
+    /*dependencies {
        classpath 'se.transmode.gradle:gradle-docker:1.1'
-   }
+   }*/
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
-apply plugin: 'docker'
+//apply plugin: 'docker'
 
 repositories {
     mavenCentral()
@@ -25,9 +25,9 @@ repositories {
 mainClassName = 'unq.api.service.ApiService'
 
 
-distDocker {
-    exposePort 9090
-}
+//distDocker {
+//    exposePort 9090
+//}
 
 dependencies {
 
@@ -42,7 +42,6 @@ dependencies {
     compile group: 'com.librato.metrics', name: 'librato-java', version: '2.0.5'
 
     //DB
-    //compile 'org.mongodb:mongodb-driver:3.3.0'
     compile group: 'com.despegar.integration', name: 'mongo-connector', version: '1.1.10'
 
     //Utils
@@ -86,4 +85,8 @@ task deploy(type: Jar) {
 //Heroku task
 task stage {
     dependsOn clean, deploy
+}
+
+task getHomeDir << {
+    println gradle.gradleHomeDir
 }
