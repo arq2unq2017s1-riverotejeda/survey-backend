@@ -11,6 +11,5 @@ MAINTAINER unq
 COPY [".", "/usr/src/survey"]
 WORKDIR /usr/src/survey
 RUN gradle stage
-RUN java -jar -Denv=prod build/libs/*.jar
 EXPOSE 9090
-ENTRYPOINT ["/survey/bin/survey"]
+CMD java -jar -Denv=prod /usr/src/survey/build/libs/survey-all.jar
