@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  app:
+    image: survey4
+    environment:
+      MONGO_URL: "mongodb://db/unq"
+    depends_on:
+      - db
+    ports:
+      - "9090:9090"
+
+  db:
+    image: mongo_survey
