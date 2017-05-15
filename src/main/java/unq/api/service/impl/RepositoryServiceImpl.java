@@ -25,7 +25,7 @@ import static unq.utils.EnvConfiguration.LOGGER;
 public class RepositoryServiceImpl implements RepositoryService {
 
     private static MongoDBDAO mongoDAO = new MongoDBDAO();
-    private static MongoCache mongoCache = new MongoCache();
+    //private static MongoCache mongoCache = new MongoCache();
     private static Logger LOGGER = LoggerFactory.getLogger(RepositoryServiceImpl.class);
     private static RepositoryService INSTANCE= null;
 
@@ -41,28 +41,19 @@ public class RepositoryServiceImpl implements RepositoryService {
     @Override
     public Student getStudent(String id) {
         LOGGER.info(String.format("Getting student from cache %s", id));
-        try {
-            return mongoCache.getStudent.get(id);
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get student from cache");
-            throw new RuntimeException(e);
-        }catch(CacheLoader.InvalidCacheLoadException e){
-            LOGGER.info("Student not found in database");
-            return null;
-        }
+        return mongoDAO.getStudent(id);
+
     }
 
     @Override
     public String saveStudent(Student student) {
         LOGGER.info(String.format("Saving student %s", student.getName()));
-
         return mongoDAO.saveStudent(student);
     }
 
     @Override
     public String saveSurvey(Survey survey) {
         LOGGER.info(String.format("Saving survey for student %s", survey.getStudentName()));
-
         return mongoDAO.saveSurvey(survey);
     }
 
@@ -87,76 +78,37 @@ public class RepositoryServiceImpl implements RepositoryService {
     @Override
     public List<Subject> getSubjects(String year) {
         LOGGER.info(String.format("Getting subjects by year %s", year));
-
-        try {
-            return mongoCache.getSubjects.get(year);
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get subjects from cache");
-            throw new RuntimeException(e);
-        }
+        return mongoDAO.getSubjects(year);
     }
 
     @Override
     public List<Subject> getAllSubjects() {
         LOGGER.info("Getting all subjects");
-
-        try {
-            return mongoCache.getAllSubjects.get("AllSubjects");
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get all subjects from cache");
-            throw new RuntimeException(e);
-        }
+        return mongoDAO.getAllSubjects();
     }
 
     @Override
     public List<Student> getStudents() {
         LOGGER.info("Getting all students");
-
-        try {
-            return mongoCache.getStudents.get("GetStudents");
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get all students from cache");
-            throw new RuntimeException(e);
-        }
+        return mongoDAO.getStudents();
     }
 
     @Override
     public List<Survey> getSurveys() {
         LOGGER.info("Getting all students");
-
-        try {
-            return mongoCache.getSurveys.get("GetSurveys");
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get all surveys from cache");
-            throw new RuntimeException(e);
-        }
+        return mongoDAO.getSurveys();
     }
 
     @Override
     public List<Survey> getSurveys(String year){
         LOGGER.info("Getting all students");
-
-        try {
-            return mongoCache.getSurveysByYear.get(year);
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get all surveys from cache");
-            throw new RuntimeException(e);
-        }
+        return mongoDAO.getSurveysByYear(year);
     }
 
     @Override
     public Optional<Student> getStudentByToken(String token) {
         LOGGER.info(String.format("Getting student by token %s", token));
-
-        try {
-            return Optional.ofNullable(mongoCache.getStudentByToken.get(token));
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get student from cache");
-            throw new RuntimeException(e);
-        } catch(CacheLoader.InvalidCacheLoadException e){
-            LOGGER.info("Student not found in database");
-            return Optional.empty();
-        }
+        return Optional.ofNullable(mongoDAO.getStudentByToken(token));
     }
 
     @Override
@@ -165,39 +117,18 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         //String encryptedToken = HMACEncrypter.encrypt(token, EnvConfiguration.configuration.getString("encryption-key"));
 
-
-        try {
-            return Optional.ofNullable(mongoCache.getDirectorByToken.get(token));
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to get director from cache");
-            throw new RuntimeException(e);
-        } catch(CacheLoader.InvalidCacheLoadException e){
-            LOGGER.info("Director not found in database");
-            return Optional.empty();
-        }
+        return Optional.ofNullable(mongoDAO.getDirectorByToken(token));
     }
 
     @Override
     public Integer cantStudents() {
         LOGGER.info("Counting all students");
-
-        try {
-            return mongoCache.cantStudents.get("CantStudents");
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying to count all surveys from cache");
-            throw new RuntimeException(e);
-        }
+        return mongoDAO.cantStudents();
     }
 
     @Override
     public Integer cantSurveys(String year) {
         LOGGER.info(String.format("Counting surveys by year %s", year));
-
-        try {
-            return mongoCache.cantSurveys.get(year);
-        } catch (ExecutionException e) {
-            LOGGER.error("Error trying count surveys from cache");
-            throw new RuntimeException(e);
-        }
+        return mongoDAO.cantSurveys(year);
     }
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 import static utils.Utils.request;
+import static utils.MainAPIInstance.initialize;
 
 /**
  * Created by mar on 06/04/17.
@@ -36,7 +37,8 @@ public class StudentControllerTest {
 
     @BeforeClass
     public static void beforeClass() {
-        ApiService.main(null);
+        //ApiService.main(null);
+        utils.MainAPIInstance.initialize();
         directorToken = singUpDummyDirector();
         studentToSave = saveStudent(legajo, directorToken);
 

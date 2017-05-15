@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by mrivero on 17/12/16.
  */
+@Deprecated
 public class MongoCache {
 
     private static MongoDBDAO mongoDAO = new MongoDBDAO();
