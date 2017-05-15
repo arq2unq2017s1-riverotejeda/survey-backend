@@ -1,7 +1,6 @@
 package unq.api.controller;
 
 import com.google.gson.reflect.TypeToken;
-import com.sun.media.jfxmedia.logging.Logger;
 import org.junit.*;
 import spark.Spark;
 import unq.api.model.*;
@@ -20,6 +19,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static unq.utils.EnvConfiguration.LOGGER;
 import static utils.Utils.request;
+import static utils.MainAPIInstance.initialize;
 
 public class DirectorControllerTest {
 
@@ -36,7 +36,8 @@ public class DirectorControllerTest {
     }
     @BeforeClass
     public static void beforeClass() {
-        ApiService.main(null);
+        //ApiService.main(null);
+        utils.MainAPIInstance.initialize();
         directorToken = singUpDummyDirector();
         //student = saveStudent(legajo,directorToken);
     }

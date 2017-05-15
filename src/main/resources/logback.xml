@@ -22,39 +22,63 @@
             </root>
         </then>
         <else>
-            <appender name="local" class="ch.qos.logback.core.ConsoleAppender">
-                <layout class="ch.qos.logback.classic.PatternLayout">
-                    <Pattern>
-                        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
-                    </Pattern>
-                </layout>
-            </appender>
+            <if condition='property("logger").contains("loggly")'>
+                <then>
+                    <appender name="logglylocal" class="ch.qos.logback.ext.loggly.LogglyAppender">
+                        <endpointUrl>http://logs-01.loggly.com/inputs/5090328c-000d-4c75-8311-d4bd11d1e78a/tag/logback</endpointUrl>
+                        <pattern>%d{"ISO8601", UTC}  %p %t %c{0}.%M - %m%n</pattern>
+                    </appender>
 
-            <appender name="file-local"
-                      class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>../logs/app.log</file>
-                <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-                    <Pattern>
-                        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
-                    </Pattern>
-                </encoder>
+                    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+                        <layout class="ch.qos.logback.classic.PatternLayout">
+                            <Pattern>
+                                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+                            </Pattern>
+                        </layout>
+                    </appender>
 
-                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                    <!-- rollover daily -->
-                    <fileNamePattern>../logs/archived/app.%d{yyyy-MM-dd}.%i.log
-                    </fileNamePattern>
-                    <timeBasedFileNamingAndTriggeringPolicy
-                            class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                        <maxFileSize>10MB</maxFileSize>
-                    </timeBasedFileNamingAndTriggeringPolicy>
-                </rollingPolicy>
+                    <root level="info">
+                        <appender-ref ref="logglylocal" />
+                        <appender-ref ref="console2" />
+                    </root>
+                </then>
+                <else>
+                    <appender name="local" class="ch.qos.logback.core.ConsoleAppender">
+                        <layout class="ch.qos.logback.classic.PatternLayout">
+                            <Pattern>
+                                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+                            </Pattern>
+                        </layout>
+                    </appender>
 
-            </appender>
+                    <appender name="file-local"
+                              class="ch.qos.logback.core.rolling.RollingFileAppender">
+                        <file>../logs/app.log</file>
+                        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                            <Pattern>
+                                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+                            </Pattern>
+                        </encoder>
 
-            <root level="INFO">
-                <appender-ref ref="file-local" />
-                <appender-ref ref="local" />
-            </root>
+                        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                            <!-- rollover daily -->
+                            <fileNamePattern>../logs/archived/app.%d{yyyy-MM-dd}.%i.log
+                            </fileNamePattern>
+                            <timeBasedFileNamingAndTriggeringPolicy
+                                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                                <maxFileSize>10MB</maxFileSize>
+                            </timeBasedFileNamingAndTriggeringPolicy>
+                        </rollingPolicy>
+
+                    </appender>
+
+                    <root level="INFO">
+                        <appender-ref ref="file-local" />
+                        <appender-ref ref="local" />
+                    </root>
+                </else>
+            </if>
         </else>
-    </if>
+     </if>
+
 </configuration>
