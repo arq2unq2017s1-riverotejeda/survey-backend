@@ -2,7 +2,7 @@ version: '2'
 
 services:
   app:
-    image: survey4
+    image: mtejeda/survey4
     environment:
       MONGO_URL: "mongodb://db/unq"
     depends_on:
@@ -11,4 +11,4 @@ services:
       - "9090:9090"
 
   db:
-    image: mongo_survey
+    image: mtejeda/mongo_survey
