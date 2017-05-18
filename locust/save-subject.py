@@ -1,10 +1,14 @@
 from locust import HttpLocust, TaskSet, task
+from random import choice
+import random, string
+
 
 
 
 def save_subj(l):
+        nombre =  ''.join(random.choice(string.lowercase) for i in range(15))
         materia = {
-            'name': 'Sistemas Distribuidos',
+            'name': nombre,
             'divisions': [
                 {
                     'comision': 'C1',
