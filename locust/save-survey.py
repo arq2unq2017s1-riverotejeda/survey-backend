@@ -1,17 +1,18 @@
 from locust import HttpLocust, TaskSet, task
 from random import choice, randint
-import random, string
-token = 1
-subjects = []
+import random, string, json
+n = 0
 
-
-def save_student(l):
-        global token
-        nombre =  ''.join(random.choice(string.lowercase) for i in range(7))
-        legajo = randint(0,20000)
+def save_survey(l):
+        global n
+        n = n+1
+        # Guardo estudiante
+        student_name =  ''.join(random.choice(string.lowercase) for i in range(7))
+        legajo = n
+        # randint(0,2000000)
         email = ''.join(random.choice(string.lowercase) for i in range(7)) + '@' + ''.join(random.choice(string.lowercase) for i in range(4)) + '.' + ''.join(random.choice(string.lowercase) for i in range(3))
         student = {
-            'name': nombre,
+            'name': student_name,
             'legajo' : legajo,
             'email': email
         }
@@ -20,40 +21,73 @@ def save_student(l):
                         data=None,
                         json=student,
                         headers={
-                            "X-App-Name":"heroku",
-                            "X-Secure-Key" : "p81lS7JOYsovb41zV41492q6AtKTHfey",
+                            "X-App-Name":"docker",
+                            "X-Secure-Key" : "rtidn2sDxg1U2u0xGWR9vkPPP33lGflu",
                             "Content-Type":"application/json",
                             "X-Director-Token":"estaesmiclave"
                         },
                         )
 
-        print "Preview; Response status code:", response.status_code
+        # print "Preview; Response status code:", response.status_code
         token = response.text
-        print "Text: ", response.text
-
-def subjects(l):
-    global subjects
-    year = '201701'
-    response = l.client.get(
-                    "public/subjects/"+year,
-                    data=None,
-                    json=None,
-                    headers={
-                        "X-App-Name":"heroku",
-                        "X-Secure-Key" : "p81lS7JOYsovb41zV41492q6AtKTHfey",
-                        "Content-Type":"application/json"
-                    },
-                    )
-    subjects = response.text
+        # print "Text: ", response.text
 
 
-def save_survey(l):
-    
+        # Traigo todas las materias
+        year = '201301'
+        response = l.client.get(
+                        "public/subjects/"+year,
+                        data=None,
+                        json=None,
+                        headers={
+                            "X-App-Name":"docker",
+                            "X-Secure-Key" : "rtidn2sDxg1U2u0xGWR9vkPPP33lGflu",
+                            "Content-Type":"application/json"
+                        },
+                        )
+        subjects = response.json()
+        data_string = json.dumps(subjects)
+        #print 'ENCODED:', data_string
+
+        decoded = json.loads(data_string)
+        #print 'DECODED:', decoded
+
+        selectedSubjects = []
+        #Guardo encuesta
+        for s in subjects:
+            name = s["subject_name"]
+            option = s["general_options"][0]
+            ss = {'subject' : name, 'status' : option}
+            # encode = json.dumps(s)
+            selectedSubjects.append(ss)
+
+        encuesta = {
+                'student_name': student_name,
+                'legajo' : legajo,
+                'token' : token,
+                'selected_subjects' : selectedSubjects,
+                'schoolYear' : year
+        }
+
+        # print encuesta
+        response = l.client.post(
+                        "student/survey",
+                        data=None,
+                        json=encuesta,
+                        headers={
+                            "X-App-Name":"docker",
+                            "X-Secure-Key" : "rtidn2sDxg1U2u0xGWR9vkPPP33lGflu",
+                            "Content-Type":"application/json",
+                            "X-Student-Token":token
+                        },
+                        )
+        # print response.status_code
+
 
 
 
 class UserTasks(TaskSet):
-    tasks = [save_student, subjects]
+    tasks = [save_survey]
 
 
 

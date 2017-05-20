@@ -13,9 +13,18 @@ def save_subj(l):
                 {
                     'comision': 'C1',
                     'weekdays': [
-                        'Lunes de 18 a 22'
+                        'Lunes de 18 a 22',
+                        'Jueves de 9 a 12'
                     ],
                     'quota': 35
+                },
+                {
+                    'comision': 'C2',
+                    'weekdays': [
+                        'Miercoles de 18 a 22',
+                        'Viernes de 9 a 12'
+                    ],
+                    'quota': 15
                 }
             ],
             'group': 'basic',
