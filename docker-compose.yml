@@ -12,3 +12,8 @@ services:
 
   db:
     image: mtejeda/mongo_survey
+
+  locust:
+    build: locust
+    ports:
+      - "8089:8089"
