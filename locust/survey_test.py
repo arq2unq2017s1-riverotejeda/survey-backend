@@ -5,60 +5,51 @@ from locust import HttpLocust, TaskSet, task
 import random, json
 
 
-class DirectorBehavior(TaskSet):
+class StudentBehavior(TaskSet):
+    # To change environment configuration
+    # For docker uncomment this lines
+    # app_name = "docker"
+    # secure_key = "rtidn2sDxg1U2u0xGWR9vkPPP33lGflu"
 
-    headers = {'director_token': "X-Director-Token", 'app_name': "X-App-Name", 'secure_key': "X-Secure-Key"}
-    headers_values = {'director_token': "marina2017", 'app_name': "dev-test", 'secure_key': "y9Y4mw9v5HK5kMp5PaFn4NrAztGlP9rt"}
+    # For local uncomment this lines
+    app_name = "dev-test"
+    secure_key = "y9Y4mw9v5HK5kMp5PaFn4NrAztGlP9rt"
 
-    def on_start(self):
-        """ Create a director before any task in order to use the director token """
+    headers = {'student_token': "X-Student-Token", 'app_name': "X-App-Name", 'secure_key': "X-Secure-Key"}
+    headers_values = {'student_token': "", 'app_name': app_name, 'secure_key': secure_key}
+    director_token = "marcia2017"
+
+    # This value depenends on initialdata script
+    student_token = "AVz5I8P2/xvUWkONfIDS4UzqNslqGZ+ucln5QAFsnU4="
+    headers_values['student_token'] = student_token
+
+    @task(1)
+    def get_student(self):
         response = self.client.request(
-            method="POST",
-            url="/private/director",
+            method="GET",
+            url="/student/0002",
             headers={
-                        self.headers['app_name']: self.headers_values['app_name'],
-                        self.headers['secure_key']: self.headers_values['secure_key']
-                    },
-            data=str(json.dumps({
-                "name": "Marina",
-                "last_name": "Rivero",
-                "email": "marina.rivero@unq.com",
-                "token": "marina2017"
-            })))
-        print "Create; Response content:", response.content
-        # self.headers_values['director_token'] = response.content
-
-        # save one student for test
-        student_response = self.client.request(
-            method="POST",
-            url="/director/student",
-            headers={
-                self.headers['director_token']: self.headers_values['director_token'],
+                self.headers['student_token']: self.headers_values['student_token'],
                 self.headers['app_name']: self.headers_values['app_name'],
                 self.headers['secure_key']: self.headers_values['secure_key']
-            },
-            data=str(json.dumps({
-                "name": "student_test",
-                "legajo": "0001",
-                "email": "student_test@unq.com"
-            })))
-        print "Student successfully saved: ", student_response.status_code
-        print "Student successfully saved with token: ", student_response.content
-        student_token = student_response.content
+            }
+        )
+        print "Finish getting student with status code:", response.status_code
 
-        # save survey for test
+    @task(2)
+    def save_survey(self):
         survey_response = self.client.request(
             method="POST",
             url="/student/survey",
             headers={
-                "X-Student-Token": student_token,
+                self.headers['student_token']: self.headers_values['student_token'],
                 self.headers['app_name']: self.headers_values['app_name'],
                 self.headers['secure_key']: self.headers_values['secure_key']
             },
             data=str(json.dumps({
                 "student_name": "student_test",
-                "legajo": "0001",
-                "token": student_token,
+                "legajo": "0002",
+                "token": self.headers_values['student_token'],
                 "selected_subjects": [
                     {
                         "subject": "Matematica 1",
@@ -95,7 +86,75 @@ class DirectorBehavior(TaskSet):
                     }],
                 "schoolYear": "201701"
             })))
-        print "A survey was saved with status: ", survey_response.status_code
+        print "Finish saving survey with status code:", survey_response.status_code
+
+    @task(3)
+    def get_survey(self):
+        response = self.client.request(
+            method="GET",
+            url="/student/survey/0002/201701",
+            headers={
+                self.headers['student_token']: self.headers_values['student_token'],
+                self.headers['app_name']: self.headers_values['app_name'],
+                self.headers['secure_key']: self.headers_values['secure_key']
+            }
+        )
+        print "Finish getting survey with status code:", response.status_code
+
+    @task(4)
+    def get_subjects(self):
+        response = self.client.request(
+            method="GET",
+            url="/public/subjects/201701",
+            headers={
+                self.headers['student_token']: self.headers_values['student_token'],
+                self.headers['app_name']: self.headers_values['app_name'],
+                self.headers['secure_key']: self.headers_values['secure_key']
+            }
+        )
+        print "Finish getting subjects with status code:", response.status_code
+
+    # Besides this is a task from director test, its necessary to generate many subjects for task 4
+    @task(5)
+    def save_subject(self):
+        response = self.client.request(
+            method="POST",
+            url="/director/subject",
+            headers={
+                "X-Director-Token": self.director_token,
+                self.headers['app_name']: self.headers_values['app_name'],
+                self.headers['secure_key']: self.headers_values['secure_key']
+            },
+            data=str(json.dumps({
+                "name": "Caracteristicas de lenguajes",
+                "school_year": "201701",
+                "divisions": [
+                    {
+                        "comision": "C1",
+                        "weekdays": ["Martes de 19 a 22"],
+                        "quota": "35"
+                    }
+                ],
+                "group": "avanzada"
+            })))
+        print "Finish saving subject with status code:", response.status_code
+
+
+class DirectorBehavior(TaskSet):
+    # To change environment configuration
+    # For docker uncomment this lines
+    # secure_key = "rtidn2sDxg1U2u0xGWR9vkPPP33lGflu"
+    # app_name = "docker"
+
+    # For local uncomment this lines
+    secure_key = "y9Y4mw9v5HK5kMp5PaFn4NrAztGlP9rt"
+    app_name = "dev-test"
+
+    headers = {'director_token': "X-Director-Token", 'app_name': "X-App-Name", 'secure_key': "X-Secure-Key"}
+    headers_values = {'director_token': "marcia2017", 'app_name': app_name,
+                      'secure_key': secure_key}
+
+    tasks = {StudentBehavior: 4}
 
     @task(1)
     def save_student(self):
@@ -108,9 +167,9 @@ class DirectorBehavior(TaskSet):
                 self.headers['secure_key']: self.headers_values['secure_key']
             },
             data=str(json.dumps({
-                "name": "student"+str(random.randrange(0, 1001, 2)),
+                "name": "student" + str(random.randrange(0, 1001, 2)),
                 "legajo": random.randrange(1000, 5001, 2),
-                "email": "student"+str(random.randrange(0, 101, 2))+"@unq.com"
+                "email": "student" + str(random.randrange(0, 101, 2)) + "@unq.com"
             })))
         print "Finish saving student with status code:", response.status_code
 
