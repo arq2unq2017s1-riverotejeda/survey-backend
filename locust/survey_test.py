@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from locust import HttpLocust, TaskSet, task
-import random, json
+import random, json, string
 
 
 class StudentBehavior(TaskSet):
@@ -154,9 +154,87 @@ class DirectorBehavior(TaskSet):
     headers_values = {'director_token': "marcia2017", 'app_name': app_name,
                       'secure_key': secure_key}
 
-    tasks = {StudentBehavior: 4}
+    tasks = {StudentBehavior: 6}
+    n = 0
 
     @task(1)
+    def save_survey(self):
+        global n
+        n = n+1
+        # Guardo estudiante
+        student_name =  ''.join(random.choice(string.lowercase) for i in range(7))
+        legajo = n
+        # randint(0,2000000)
+        email = ''.join(random.choice(string.lowercase) for i in range(7)) + '@' + ''.join(random.choice(string.lowercase) for i in range(4)) + '.' + ''.join(random.choice(string.lowercase) for i in range(3))
+        student = {
+            'name': student_name,
+            'legajo' : legajo,
+            'email': email
+        }
+        response = self.client.post(
+            "director/student",
+            data=None,
+            json=student,
+            headers={
+                self.headers['app_name']: self.headers_values['app_name'],
+                self.headers['secure_key']: self.headers_values['secure_key'],
+                "Content-Type": "application/json",
+                self.headers['director_token']: self.headers_values['director_token']
+            },
+        )
+
+        token = response.text
+
+        # Traigo todas las materias
+        year = '201301'
+        response = self.client.get(
+            "public/subjects/"+year,
+            data=None,
+            json=None,
+            headers={
+                self.headers['app_name']: self.headers_values['app_name'],
+                self.headers['secure_key']: self.headers_values['secure_key'],
+                "Content-Type": "application/json"
+            },
+        )
+        subjects = response.json()
+        data_string = json.dumps(subjects)
+
+        decoded = json.loads(data_string)
+
+        selectedSubjects = []
+
+        #Guardo encuesta
+        for s in subjects:
+            name = s["subject_name"]
+            option = s["general_options"][0]
+            ss = {'subject' : name, 'status' : option}
+            # encode = json.dumps(s)
+            selectedSubjects.append(ss)
+
+        encuesta = {
+            'student_name': student_name,
+            'legajo' : legajo,
+            'token' : token,
+            'selected_subjects' : selectedSubjects,
+            'school_year' : year
+        }
+
+        # print encuesta
+        response = self.client.post(
+            "student/survey",
+            data=None,
+            json=encuesta,
+            headers={
+                self.headers['app_name']: self.headers_values['app_name'],
+                self.headers['secure_key']: self.headers_values['secure_key'],
+                "Content-Type": "application/json",
+                "X-Student-Token": token
+            },
+        )
+        print response.status_code
+
+    @task(2)
     def save_student(self):
         response = self.client.request(
             method="POST",
@@ -173,7 +251,7 @@ class DirectorBehavior(TaskSet):
             })))
         print "Finish saving student with status code:", response.status_code
 
-    @task(2)
+    @task(3)
     def get_survey(self):
         response = self.client.request(
             method="GET",
@@ -186,7 +264,7 @@ class DirectorBehavior(TaskSet):
         )
         print "Finish getting survey with status code:", response.status_code
 
-    @task(3)
+    @task(4)
     def save_subject(self):
         response = self.client.request(
             method="POST",
@@ -209,6 +287,46 @@ class DirectorBehavior(TaskSet):
                 "group": "avanzada"
             })))
         print "Finish saving subject with status code:", response.status_code
+
+    @task(5)
+    def save_subj_random(self):
+        nombre = ''.join(random.choice(string.lowercase) for i in range(15))
+        materia = {
+            'name': nombre,
+            'divisions': [
+                {
+                    'comision': 'C1',
+                    'weekdays': [
+                        'Lunes de 18 a 22',
+                        'Jueves de 9 a 12'
+                    ],
+                    'quota': 35
+                },
+                {
+                    'comision': 'C2',
+                    'weekdays': [
+                        'Miercoles de 18 a 22',
+                        'Viernes de 9 a 12'
+                    ],
+                    'quota': 15
+                }
+            ],
+            'group': 'basic',
+            'school_year': '201301'
+        }
+        response = self.client.post(
+            "director/subject",
+            data=None,
+            json=materia,
+            headers={
+                self.headers['director_token']: self.headers_values['director_token'],
+                self.headers['app_name']: self.headers_values['app_name'],
+                self.headers['secure_key']: self.headers_values['secure_key'],
+                "Content-Type": "application/json"
+            },
+        )
+
+        print "Preview; Response status code:", response.status_code
 
 
 class DirectorSurvey(HttpLocust):
