@@ -2,7 +2,6 @@ package unq.api.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import unq.api.controller.SurveyController;
 import unq.api.security.SecurityFilter;
 import unq.utils.WebServiceConfiguration;
