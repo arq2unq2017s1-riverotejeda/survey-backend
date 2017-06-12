@@ -1,26 +1,14 @@
 package unq.api.security;
 
-import com.librato.metrics.client.Duration;
-import com.librato.metrics.client.GaugeMeasure;
-import com.librato.metrics.client.LibratoClient;
-import com.librato.metrics.client.Measures;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import unq.api.service.SecurityService;
 import unq.api.service.impl.SecurityServiceImpl;
 import unq.utils.EnvConfiguration;
-import unq.utils.Librato;
 
-import javax.servlet.http.HttpServletResponse;
-
-
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.halt;
-import static unq.utils.Librato.client;
 
 /**
  * Created by mrivero on 25/3/17.
