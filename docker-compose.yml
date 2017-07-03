@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  app:
+  app1:
     image: mtejeda/survey4
     environment:
       MONGO_URL: "mongodb://db/unq"
@@ -9,7 +9,14 @@ services:
       - db
     ports:
       - "9090:9090"
-
+  app2:
+      image: mtejeda/survey4
+      environment:
+        MONGO_URL: "mongodb://db/unq"
+      depends_on:
+        - db
+      ports:
+        - "9090:9090"
   db:
     image: mtejeda/mongo_survey
 
@@ -17,3 +24,11 @@ services:
     build: locust
     ports:
       - "8089:8089"
+
+  haproxy:
+    image: tutum/haproxy:latest
+    links:
+     - app1
+     - app2
+    ports:
+     - "9090:9090"
