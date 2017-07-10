@@ -1,14 +1,48 @@
 version: '2'
 
 services:
-  app:
+  app1:
     image: mtejeda/survey4
     environment:
       MONGO_URL: "mongodb://db/unq"
     depends_on:
       - db
-    ports:
-      - "9090:9090"
-
+#    target_num_containers: 2
+    #ports:
+    #  - "9090:9090"
+#  app2:
+#      image: mtejeda/survey4
+#      environment:
+#        MONGO_URL: "mongodb://db/unq"
+#      depends_on:
+#        - db
+      #ports:
+      #  - "9090:9090"
   db:
     image: mtejeda/mongo_survey
+  lb:
+    image: dockercloud/haproxy
+    links:
+      - app1
+#      - app2
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+#  lb:
+#    image: 'dockercloud/haproxy:latest'
+#    links:
+#      - app1
+#    ports:
+#      - '80:80'
+#    roles:
+#      - global
+
+
+#  haproxy:
+#    image: tutum/haproxy:latest
+#    links:
+#     - app1
+#     - app2
+#    ports:
+#     - "9090:9090"

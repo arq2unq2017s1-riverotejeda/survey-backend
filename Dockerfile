@@ -12,4 +12,4 @@ COPY [".", "/usr/src/survey"]
 WORKDIR /usr/src/survey
 RUN gradle stage
 EXPOSE 9090
-CMD java -jar -Denv=prod /usr/src/survey/build/libs/survey-all.jar
+CMD java -jar -Denv=docker -javaagent:/usr/src/survey/newrelic/newrelic.jar -Dnewrelic.environment=development /usr/src/survey/build/libs/survey-all.jar
